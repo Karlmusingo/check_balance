@@ -12,6 +12,7 @@ import { createUserSchema, loginSchema } from './users.validator';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { BaseUserDto } from './dto/base-user.dto';
 
 @Controller()
 export class UsersController {
@@ -29,13 +30,13 @@ export class UsersController {
   @Post('login')
   @UsePipes(new JoiValidationPipe(loginSchema))
   async login(@Body() loginUserDto: LoginUserDto): Promise<CreateUserResponse> {
-    const user = await this.usersService.findOne({
+    const user: BaseUserDto = await this.usersService.findOne({
       $or: [
         { username: loginUserDto.username },
         { email: loginUserDto.username },
       ],
     });
-
+    console.log('user :>> ', user);
     if (!user) {
       throw new BadRequestException('Wrong username or password');
     }
@@ -45,6 +46,7 @@ export class UsersController {
     }
 
     const token = await this.jwtService.signAsync({
+      _id: user._id,
       username: user.username,
       email: user.email,
     });
