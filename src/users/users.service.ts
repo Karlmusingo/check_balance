@@ -16,7 +16,7 @@ export interface CreateUserResponse {
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel('User') private userModel: Model<CreateUserDto>,
+    @InjectModel('User') private userModel: Model<BaseUserDto>,
     private jwtService: JwtService,
   ) {}
 
@@ -24,9 +24,13 @@ export class UsersService {
     const hash = bcrypt.hashSync(createUserDto.password, 10);
 
     try {
-      await this.userModel.create({ ...createUserDto, password: hash });
+      const newUser = await this.userModel.create({
+        ...createUserDto,
+        password: hash,
+      });
 
       const token = await this.jwtService.signAsync({
+        _id: newUser._id,
         username: createUserDto.username,
         email: createUserDto.email,
       });
@@ -43,7 +47,7 @@ export class UsersService {
     }
   }
 
-  async findOne(condition: any): Promise<BaseUserDto | null | undefined> {
+  async findOne(condition: any): Promise<BaseUserDto | null> {
     try {
       const user = await this.userModel.findOne(condition);
 
