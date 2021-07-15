@@ -6,6 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { BaseUserDto } from './dto/base-user.dto';
 import { InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { TransactionsService } from 'src/transactions/transactions.service';
+import { TransactionTypes } from 'src/constants/transactionTypes';
 
 export interface CreateUserResponse {
   username: string;
@@ -17,6 +19,7 @@ export interface CreateUserResponse {
 export class UsersService {
   constructor(
     @InjectModel('User') private userModel: Model<BaseUserDto>,
+    private readonly transactionsService: TransactionsService,
     private jwtService: JwtService,
   ) {}
 
@@ -27,6 +30,13 @@ export class UsersService {
       const newUser = await this.userModel.create({
         ...createUserDto,
         password: hash,
+      });
+
+      await this.transactionsService.create({
+        userId: newUser._id,
+        amount: 0,
+        description: 'Registration of the new account',
+        transactionType: TransactionTypes.CREDIT,
       });
 
       const token = await this.jwtService.signAsync({

@@ -4,6 +4,7 @@ import {
   Controller,
   Post,
   UsePipes,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserResponse, UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { BaseUserDto } from './dto/base-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class UsersController {
@@ -36,7 +38,7 @@ export class UsersController {
         { email: loginUserDto.username },
       ],
     });
-    console.log('user :>> ', user);
+
     if (!user) {
       throw new BadRequestException('Wrong username or password');
     }
