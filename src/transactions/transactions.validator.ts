@@ -6,5 +6,5 @@ export const createTransactionSchema = Joi.object({
   transactionType: Joi.string()
     .valid(TransactionTypes.CREDIT, TransactionTypes.DEBIT)
     .required(),
-  description: Joi.string(),
+  description: Joi.string().allow('').optional(),
 });

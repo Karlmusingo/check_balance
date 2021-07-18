@@ -11,7 +11,7 @@ import {
 import { JoiValidationPipe } from 'src/JoiValidationPipe';
 import { BaseTransactionDto } from './dto/base-transaction.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { TransactionsService } from './transactions.service';
+import { IMetaData, TransactionsService } from './transactions.service';
 import { createTransactionSchema } from './transactions.validator';
 
 interface IRequest extends Request {
@@ -44,7 +44,7 @@ export class TransactionsController {
   getAll(
     @Req() request: IRequest,
     @Query() query,
-  ): Promise<BaseTransactionDto[]> {
+  ): Promise<{ data: BaseTransactionDto[]; meta: IMetaData }> {
     const { user } = request;
 
     return this.transactionsService.getAll(user._id, query);

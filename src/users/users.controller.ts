@@ -5,6 +5,7 @@ import {
   Post,
   UsePipes,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { CreateUserResponse, UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,6 +31,7 @@ export class UsersController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @UsePipes(new JoiValidationPipe(loginSchema))
   async login(@Body() loginUserDto: LoginUserDto): Promise<CreateUserResponse> {
     const user: BaseUserDto = await this.usersService.findOne({

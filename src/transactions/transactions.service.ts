@@ -11,6 +11,12 @@ interface ICreateTransaction extends CreateTransactionDto {
   userId: string;
 }
 
+export interface IMetaData {
+  total: number;
+  page: number;
+  limit: number;
+}
+
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -62,15 +68,19 @@ export class TransactionsService {
   async getAll(
     userId: string,
     query: Record<string, number>,
-  ): Promise<BaseTransactionDto[]> {
+  ): Promise<{ data: BaseTransactionDto[]; meta: IMetaData }> {
     try {
-      const { limit = 5, offset = 0 } = query;
+      const { limit = 5, page = 1 } = query;
       const transactions = await this.transactionModal
         .find({ user: userId })
         .select('-__v')
         .sort({ field: 'asc', _id: -1 })
-        .skip(Number(offset))
+        .skip(Number(limit) * (Number(page) - 1))
         .limit(Number(limit));
+
+      const totalCount = await this.transactionModal.countDocuments({
+        user: userId,
+      });
 
       // const data = await this.transactionModal.aggregate([
       //   {
@@ -92,7 +102,14 @@ export class TransactionsService {
       // console.log('data :>> ', data[0].totalCount);
       // console.log('totalCount :>> ', totalCount);
 
-      return transactions;
+      return {
+        data: transactions,
+        meta: {
+          total: totalCount,
+          page: Number(page),
+          limit: Number(limit),
+        },
+      };
     } catch (err) {
       throw new InternalServerErrorException(
         err.message || 'Internal server error',
