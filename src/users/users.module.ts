@@ -22,7 +22,7 @@ import {
     ]),
     JwtModule.register({
       secret: process.env.SECRETKEY,
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: '2d' },
     }),
   ],
 })
