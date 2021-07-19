@@ -38,14 +38,20 @@ Bonus:
 
 - Possibly, you should work in a Linux environment (or at least provide instructions to make the system work easily in Linux)
 
-## Run the project locally {#run-it-locally}
+<h2 id="run-it-locally">Run the project locally</h2>
 
 To run the project locally, first make sure to have node and mongodb installed
 
 ### Clone the project
 
 ```bash
-$ git clone https://github.com/Karlmusingo/check-balance-frontend.git
+$ git clone https://github.com/Karlmusingo/check-balance.git && cd check-balance
+```
+
+### Copy the .env file
+
+```bash
+$ cp .env.exemple .env
 ```
 
 ### Installation
